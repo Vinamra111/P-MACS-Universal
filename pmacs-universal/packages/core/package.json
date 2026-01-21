@@ -1,0 +1,65 @@
+{
+  "name": "@pmacs/core",
+  "version": "1.0.0",
+  "description": "P-MACS Core SDK - Pharmacy Management and Control System",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./tools": {
+      "import": "./dist/tools/index.mjs",
+      "require": "./dist/tools/index.js",
+      "types": "./dist/tools/index.d.ts"
+    },
+    "./database": {
+      "import": "./dist/database/index.mjs",
+      "require": "./dist/database/index.js",
+      "types": "./dist/database/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "pharmacy",
+    "healthcare",
+    "hospital",
+    "inventory",
+    "langchain",
+    "ai",
+    "medical"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "csv-parse": "^5.6.0",
+    "csv-stringify": "^6.5.0",
+    "fuse.js": "^7.0.0",
+    "zod": "^3.24.0"
+  },
+  "peerDependencies": {
+    "langchain": "^0.3.0",
+    "@langchain/openai": "^0.3.0",
+    "@langchain/core": "^0.3.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "vitest": "^2.1.0",
+    "langchain": "^0.3.0",
+    "@langchain/openai": "^0.3.0",
+    "@langchain/core": "^0.3.0"
+  }
+}
