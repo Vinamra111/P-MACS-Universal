@@ -1,0 +1,222 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { AlertTriangle, Users, TrendingUp, Database, Activity, ShieldCheck } from 'lucide-react';
+
+interface DashboardStats {
+  totalUsers: number;
+  systemHealth: 'good' | 'warning' | 'critical';
+  totalInventoryValue: number;
+  activeAlerts: number;
+  systemLoad: number;
+  dataIntegrity: 'good' | 'warning';
+}
+
+interface UserActivity {
+  id: string;
+  user: string;
+  role: string;
+  action: string;
+  timestamp: string;
+}
+
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<DashboardStats>({
+    totalUsers: 0,
+    systemHealth: 'good',
+    totalInventoryValue: 0,
+    activeAlerts: 0,
+    systemLoad: 0,
+    dataIntegrity: 'good',
+  });
+  const [recentActivity, setRecentActivity] = useState<UserActivity[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [statsRes, activityRes] = await Promise.all([
+        fetch('/api/admin/dashboard'),
+        fetch('/api/admin/activity'),
+      ]);
+
+      const [statsData, activityData] = await Promise.all([
+        statsRes.json(),
+        activityRes.json(),
+      ]);
+
+      if (statsData.success) {
+        setStats(statsData.stats);
+      }
+
+      if (activityData.success) {
+        setRecentActivity(activityData.activity.slice(0, 15)); // Top 15 activities
+      }
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900">System Administration</h1>
+            <p className="text-sm text-gray-500 mt-1">System-wide monitoring and management</p>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <Activity className="h-3 w-3" />
+            <span>Auto-refresh: 30s</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Bar */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div className="p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="h-4 w-4 text-gray-400" />
+            <span className="text-xs text-gray-500 uppercase tracking-wide">Users</span>
+          </div>
+          <p className="text-3xl font-semibold text-gray-900">{loading ? '–' : stats.totalUsers}</p>
+        </div>
+
+        <div className="p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <ShieldCheck className="h-4 w-4 text-gray-400" />
+            <span className="text-xs text-gray-500 uppercase tracking-wide">System Health</span>
+          </div>
+          <p className={`text-lg font-semibold capitalize ${
+            stats.systemHealth === 'good' ? 'text-green-600' :
+            stats.systemHealth === 'warning' ? 'text-yellow-600' : 'text-red-600'
+          }`}>
+            {loading ? '–' : stats.systemHealth}
+          </p>
+        </div>
+
+        <div className="p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <Database className="h-4 w-4 text-gray-400" />
+            <span className="text-xs text-gray-500 uppercase tracking-wide">Inventory Value</span>
+          </div>
+          <p className="text-2xl font-semibold text-gray-900">
+            {loading ? '–' : `$${(stats.totalInventoryValue / 1000).toFixed(0)}k`}
+          </p>
+        </div>
+
+        <div className="p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertTriangle className="h-4 w-4 text-gray-400" />
+            <span className="text-xs text-gray-500 uppercase tracking-wide">Active Alerts</span>
+          </div>
+          <p className="text-3xl font-semibold text-gray-900">{loading ? '–' : stats.activeAlerts}</p>
+        </div>
+
+        <div className="p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="h-4 w-4 text-gray-400" />
+            <span className="text-xs text-gray-500 uppercase tracking-wide">System Load</span>
+          </div>
+          <p className="text-3xl font-semibold text-gray-900">{loading ? '–' : `${stats.systemLoad}%`}</p>
+        </div>
+
+        <div className="p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <Database className="h-4 w-4 text-gray-400" />
+            <span className="text-xs text-gray-500 uppercase tracking-wide">Data Integrity</span>
+          </div>
+          <p className={`text-lg font-semibold capitalize ${
+            stats.dataIntegrity === 'good' ? 'text-green-600' : 'text-yellow-600'
+          }`}>
+            {loading ? '–' : stats.dataIntegrity}
+          </p>
+        </div>
+      </div>
+
+      {/* System Health Alert */}
+      {stats.systemHealth === 'critical' && !loading && (
+        <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-red-900">
+                Critical system issues detected - Immediate action required
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Recent Activity Table */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent User Activity</h2>
+        {loading ? (
+          <div className="flex items-center justify-center py-12 border border-gray-200 rounded-lg">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900"></div>
+          </div>
+        ) : recentActivity.length === 0 ? (
+          <div className="text-center py-12 border border-gray-200 rounded-lg">
+            <Activity className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-sm text-gray-500">No recent activity</p>
+          </div>
+        ) : (
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    User
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Role
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Action
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Time
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {recentActivity.map((activity) => (
+                  <tr key={activity.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                      {activity.user}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        activity.role === 'Master' ? 'bg-purple-100 text-purple-800' :
+                        activity.role === 'Pharmacist' ? 'bg-blue-100 text-blue-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {activity.role}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {activity.action}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-500">
+                      {activity.timestamp}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+    </div>
+  );
+}
