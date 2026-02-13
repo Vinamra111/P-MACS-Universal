@@ -49,16 +49,21 @@ Use this for queries like:
           });
         }
 
-        // Filter based on includeAdequate
-        const filteredItems = includeAdequate
+        // Filter based on includeAdequate and exclude expired items from default view
+        let filteredItems = includeAdequate
           ? items
           : items.filter(item => item.status !== 'adequate');
+
+        // Calculate expired count BEFORE filtering them out
+        const expiredCount = items.filter(i => i.status === 'expired').length;
+
+        // Always exclude expired items from location inventory view
+        filteredItems = filteredItems.filter(item => item.status !== 'expired');
 
         // Calculate summary stats
         const totalItems = filteredItems.length;
         const stockouts = filteredItems.filter(i => i.status === 'stockout').length;
         const lowStock = filteredItems.filter(i => i.status === 'low' || i.status === 'critical').length;
-        const expired = filteredItems.filter(i => i.status === 'expired').length;
         const adequate = filteredItems.filter(i => i.status === 'adequate').length;
 
         const controlledCount = filteredItems.filter(i => i.category === 'controlled').length;
@@ -70,12 +75,12 @@ Use this for queries like:
             totalItems,
             stockouts,
             lowStock,
-            expired,
             adequate,
+            expired: expiredCount,
             controlledSubstances: controlledCount,
           },
 
-          alertLevel: stockouts > 0 || expired > 0
+          alertLevel: stockouts > 0
             ? 'critical'
             : lowStock > 0
               ? 'warning'
@@ -83,14 +88,13 @@ Use this for queries like:
 
           alertMessage: stockouts > 0
             ? `${stockouts} item(s) out of stock`
-            : expired > 0
-              ? `${expired} item(s) expired`
-              : lowStock > 0
-                ? `${lowStock} item(s) below safety stock`
-                : 'All items adequately stocked',
+            : lowStock > 0
+              ? `${lowStock} item(s) below safety stock`
+              : 'All items adequately stocked',
 
           items: filteredItems.map(item => ({
             drugName: item.drugName,
+            location: item.location, // CRITICAL: Include actual location from database
             category: item.category,
             quantity: item.qtyOnHand,
             status: item.status,
@@ -110,7 +114,6 @@ Use this for queries like:
 
           recommendations: [
             stockouts > 0 && `Urgently restock ${stockouts} stockout item(s)`,
-            expired > 0 && `Remove ${expired} expired item(s) immediately`,
             lowStock > 0 && `Review ${lowStock} low-stock item(s) for reordering`,
           ].filter(Boolean),
         }, null, 2);
