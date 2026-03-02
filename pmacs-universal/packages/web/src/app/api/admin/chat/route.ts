@@ -317,7 +317,9 @@ async function getAgentExecutor(currentUser: AuthenticatedUser) {
   const llm = new ChatOpenAI({
     modelName: 'gpt-4o-mini',
     temperature: 0,
+    streaming: false,
     openAIApiKey: process.env.OPENAI_API_KEY,
+    timeout: 30000,
   });
 
   // Create agent prompt

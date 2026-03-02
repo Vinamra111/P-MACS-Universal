@@ -328,10 +328,11 @@ async function getAgentExecutor() {
 
   // Initialize LLM with streaming for faster perceived response
   const llm = new ChatOpenAI({
-    modelName: 'gpt-4o-mini', // Fast enough for ward inventory lookups; 3x faster than gpt-4o
+    modelName: 'gpt-4o-mini',
     temperature: 0,
-    streaming: true, // Enable streaming for faster responses
+    streaming: false, // Must be false on Vercel serverless — SSE streams never terminate in Lambda
     openAIApiKey: process.env.OPENAI_API_KEY,
+    timeout: 30000,  // 30s SDK-level timeout per OpenAI call as an extra safety net
   });
 
   // Create agent prompt - Gold Standard Nurse Implementation
