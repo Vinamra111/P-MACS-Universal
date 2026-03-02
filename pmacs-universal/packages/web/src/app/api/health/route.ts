@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { existsSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
 import { readdir } from 'fs/promises';
 import path from 'path';
 
@@ -64,21 +64,45 @@ export async function GET(request: NextRequest) {
   };
 
   // Check database files
+  const debugInfo: Record<string, unknown> = { cwd: process.cwd(), env_DATA_PATH: process.env.DATA_PATH };
   try {
-    const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
+    // Try multiple possible paths to find CSV files (monorepo tracing uncertainty)
+    const candidatePaths = [
+      path.join(process.cwd(), process.env.DATA_PATH || '../api/data'),
+      path.join(process.cwd(), 'data'),
+      path.join(process.cwd(), 'packages/web/data'),
+      path.join(process.cwd(), '../api/data'),
+    ];
+    debugInfo.candidatePaths = candidatePaths;
+
     const requiredFiles = [
       'inventory_master.csv',
       'transaction_logs.csv',
       'user_access.csv',
     ];
 
+    let dataPath = candidatePaths[0];
     let filesFound = 0;
-    for (const file of requiredFiles) {
-      const filePath = path.join(dataPath, file);
-      if (existsSync(filePath)) {
-        filesFound++;
+
+    // Find first path where all required files exist
+    for (const candidate of candidatePaths) {
+      let found = 0;
+      for (const file of requiredFiles) {
+        if (existsSync(path.join(candidate, file))) found++;
       }
+      if (found > filesFound) {
+        filesFound = found;
+        dataPath = candidate;
+      }
+      if (filesFound === requiredFiles.length) break;
     }
+
+    // List top-level dirs of cwd for diagnostics
+    try {
+      debugInfo.cwdContents = readdirSync(process.cwd()).slice(0, 20);
+    } catch {}
+    debugInfo.resolvedDataPath = dataPath;
+    debugInfo.filesFound = filesFound;
 
     if (filesFound === requiredFiles.length) {
       health.checks.database = {
@@ -156,7 +180,7 @@ export async function GET(request: NextRequest) {
                      health.status === 'degraded' ? 200 :
                      503;
 
-  return NextResponse.json(health, { status: statusCode });
+  return NextResponse.json({ ...health, _debug: debugInfo }, { status: statusCode });
 }
 
 // Simple liveness check
