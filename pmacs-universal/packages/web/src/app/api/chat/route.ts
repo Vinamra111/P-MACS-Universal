@@ -9,6 +9,7 @@ import path from 'path';
 import { HumanMessage, AIMessage } from '@langchain/core/messages';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // Allow up to 60s for LangChain agent on Vercel
 
 // Initialize database adapter
 const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
@@ -620,10 +621,15 @@ export async function POST(request: NextRequest) {
       enhancedMessage = `${message} [User is ${contextHints.join(', ')}]`;
     }
 
-    // Execute query with conversation context
-    const result = await executor.invoke({
-      input: enhancedMessage,
-    });
+    // Execute query with timeout (55s — 5s below the 60s Vercel maxDuration ceiling)
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Request timeout')), 55000)
+    );
+
+    const result = await Promise.race([
+      executor.invoke({ input: enhancedMessage }),
+      timeoutPromise,
+    ]) as { output: string };
 
     // Extract entities from this conversation turn
     const entities = extractEntities(message, result.output);

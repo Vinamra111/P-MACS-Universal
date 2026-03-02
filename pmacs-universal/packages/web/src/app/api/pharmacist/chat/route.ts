@@ -8,6 +8,7 @@ import path from 'path';
 import { logAccess } from '@/lib/access-logger';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // Allow up to 60s for LangChain agent on Vercel
 
 // Initialize database adapter
 const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
@@ -342,7 +343,7 @@ async function getAgentExecutor() {
 
   // Initialize LLM with streaming for faster perceived response
   const llm = new ChatOpenAI({
-    modelName: 'gpt-4o',
+    modelName: 'gpt-4o-mini', // Adequate for tool-calling agents; 3x faster than gpt-4o
     temperature: 0,
     streaming: true, // Enable streaming for faster responses
     openAIApiKey: process.env.OPENAI_API_KEY,
@@ -643,10 +644,15 @@ export async function POST(request: NextRequest) {
       enhancedMessage = `${message} [User is ${contextHints.join(', ')}]`;
     }
 
-    // Execute the query
-    const result = await executor.invoke({
-      input: enhancedMessage,
-    });
+    // Execute query with timeout (55s — 5s below the 60s Vercel maxDuration ceiling)
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Request timeout')), 55000)
+    );
+
+    const result = await Promise.race([
+      executor.invoke({ input: enhancedMessage }),
+      timeoutPromise,
+    ]) as { output: string };
 
     // Extract entities from this conversation turn
     const entities = extractEntities(message, result.output);
