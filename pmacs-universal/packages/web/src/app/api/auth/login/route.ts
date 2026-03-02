@@ -4,8 +4,10 @@ import path from 'path';
 import crypto from 'crypto';
 import { logAccess } from '@/lib/access-logger';
 
+export const dynamic = 'force-dynamic';
+
 // Initialize database adapter
-const dataPath = path.join(process.cwd(), '../api/data');
+const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
 const db = new CSVDatabaseAdapter(dataPath);
 
 // Get local timestamp in YYYY-MM-DD HH:mm:ss format

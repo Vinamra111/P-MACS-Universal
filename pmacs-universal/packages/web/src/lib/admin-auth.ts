@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CSVDatabaseAdapter } from '@pmacs/core';
 import path from 'path';
 
-const dataPath = path.join(process.cwd(), '../api/data');
+const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
 const db = new CSVDatabaseAdapter(dataPath);
 
 export interface AuthenticatedUser {

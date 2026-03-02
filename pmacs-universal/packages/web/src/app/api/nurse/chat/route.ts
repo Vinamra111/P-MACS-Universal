@@ -7,8 +7,10 @@ import { CSVDatabaseAdapter, createAllTools, getToolsByPermission } from '@pmacs
 import path from 'path';
 import { logAccess } from '@/lib/access-logger';
 
+export const dynamic = 'force-dynamic';
+
 // Initialize database adapter
-const dataPath = path.join(process.cwd(), '../api/data');
+const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
 const db = new CSVDatabaseAdapter(dataPath);
 
 // ============================================================

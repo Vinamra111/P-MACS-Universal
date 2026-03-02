@@ -2,6 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@pmacs/core'],
+  // Bundle the CSV data files with serverless functions on Vercel
+  experimental: {
+    outputFileTracingIncludes: {
+      '/api/**': ['./data/**'],
+    },
+  },
   optimizeFonts: false, // Disable font optimization to avoid SSL issues
   serverComponentsExternalPackages: ['bcrypt'],
   webpack: (config, { isServer }) => {

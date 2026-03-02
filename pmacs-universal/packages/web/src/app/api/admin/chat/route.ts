@@ -10,8 +10,10 @@ import { checkRateLimit, getRequestIdentifier, RATE_LIMITS } from '@/lib/rate-li
 import { logAccess } from '@/lib/access-logger';
 import path from 'path';
 
+export const dynamic = 'force-dynamic';
+
 // Initialize database adapter
-const dataPath = path.join(process.cwd(), '../api/data');
+const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
 const db = new CSVDatabaseAdapter(dataPath);
 
 // ============================================================

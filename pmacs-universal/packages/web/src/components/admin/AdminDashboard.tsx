@@ -35,7 +35,10 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      setLoading(false);
+      return;
+    }
 
     try {
       const headers = {
@@ -88,7 +91,7 @@ export default function AdminDashboard() {
     // Real-time refresh every 5 seconds
     const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [currentUser?.empId]); // Re-run when user becomes available (fixes stale closure on async auth init)
 
   const tabs = [
     { id: 'system-overview' as TabType, label: 'System Overview', icon: BarChart3 },

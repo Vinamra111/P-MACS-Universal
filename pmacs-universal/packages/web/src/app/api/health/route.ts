@@ -8,6 +8,8 @@ import { existsSync } from 'fs';
 import { readdir } from 'fs/promises';
 import path from 'path';
 
+export const dynamic = 'force-dynamic';
+
 interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: string;
@@ -63,7 +65,7 @@ export async function GET(request: NextRequest) {
 
   // Check database files
   try {
-    const dataPath = path.join(process.cwd(), '../api/data');
+    const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
     const requiredFiles = [
       'inventory_master.csv',
       'transaction_logs.csv',

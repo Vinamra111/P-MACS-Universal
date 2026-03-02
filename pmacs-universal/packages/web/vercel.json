@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd ../.. && pnpm build:core && cd packages/web && node scripts/setup-data.js && next build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "framework": "nextjs"
+}

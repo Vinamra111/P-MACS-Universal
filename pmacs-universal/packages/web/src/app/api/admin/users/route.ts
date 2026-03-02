@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CSVDatabaseAdapter, PasswordHasher, UserRole } from '@pmacs/core';
+import { createHash } from 'crypto';
+import { CSVDatabaseAdapter, UserRole } from '@pmacs/core';
 import path from 'path';
 import { requireAdminAuth, isAuthError } from '@/lib/admin-auth';
 import {
@@ -10,7 +11,9 @@ import {
 } from '@/lib/validation/admin-schemas';
 import { checkRateLimit, getRequestIdentifier, RATE_LIMITS } from '@/lib/rate-limit';
 
-const dataPath = path.join(process.cwd(), '../api/data');
+export const dynamic = 'force-dynamic';
+
+const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
 const db = new CSVDatabaseAdapter(dataPath);
 
 // GET - List all users
@@ -100,8 +103,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password using bcrypt (secure)
-    const passwordHash = await PasswordHasher.hash(password);
+    // Hash password using SHA-256 (consistent with AuthManager.hashPassword)
+    const passwordHash = createHash('sha256').update(password).digest('hex');
 
     // Determine unified group based on role
     const unifiedGroup = role === 'Master' ? 'MASTER_GROUP' :

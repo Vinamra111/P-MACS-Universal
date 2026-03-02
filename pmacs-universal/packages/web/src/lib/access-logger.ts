@@ -28,7 +28,7 @@ export function logAccess(
   details: string = ''
 ): void {
   try {
-    const dataPath = path.join(process.cwd(), '../api/data');
+    const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
     const accessLogsPath = path.join(dataPath, 'access_logs.csv');
 
     // Create file with header if it doesn't exist

@@ -5,7 +5,9 @@ import { parse } from 'csv-parse/sync';
 import { requireAdminAuth, isAuthError } from '@/lib/admin-auth';
 import { checkRateLimit, getRequestIdentifier, RATE_LIMITS } from '@/lib/rate-limit';
 
-const dataPath = path.join(process.cwd(), '../api/data');
+export const dynamic = 'force-dynamic';
+
+const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
 
 export async function GET(request: NextRequest) {
   // Verify admin authentication
@@ -55,7 +57,7 @@ export async function GET(request: NextRequest) {
       details: record.details || '',
     }))
     .reverse() // Most recent first
-    .filter(log => log.empId !== currentUser.empId); // Filter out admin's own logs
+    .filter((log: { empId: string }) => log.empId !== currentUser.empId); // Filter out admin's own logs
 
     return NextResponse.json({ logs, success: true });
   } catch (error) {

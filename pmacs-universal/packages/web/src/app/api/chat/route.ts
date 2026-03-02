@@ -8,8 +8,10 @@ import { CSVDatabaseAdapter, createAllTools } from '@pmacs/core';
 import path from 'path';
 import { HumanMessage, AIMessage } from '@langchain/core/messages';
 
+export const dynamic = 'force-dynamic';
+
 // Initialize database adapter
-const dataPath = path.join(process.cwd(), '../api/data');
+const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
 const db = new CSVDatabaseAdapter(dataPath);
 
 // ============================================================

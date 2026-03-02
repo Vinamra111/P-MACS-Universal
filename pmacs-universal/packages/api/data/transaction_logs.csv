@@ -1,4 +1,4 @@
-txnId,timestamp,empId,drugName,location,txnType,quantityChange,qtyBefore,qtyAfter,batchLot,reason,approvedBy
+txn_id,timestamp,user_id,drug_id,location,action,qty_change,qtyBefore,qtyAfter,batchLot,reason,approvedBy
 TXN001,2025-01-21 14:30,P001,Propofol,ICU-Shelf-A,DISPENSED,-10,80,70,BATCH-001,Surgical procedure,P001
 TXN002,2025-01-21 14:15,N003,Morphine Sulfate,Secure-Vault-1,DISPENSED,-5,100,95,MOR-2024-001,Pain management,P001
 TXN003,2025-01-21 14:00,P002,Paracetamol,Ward-A-Med-Room,DISPENSED,-50,500,450,PARA-2025-001,Ward rounds,P002
@@ -69,3 +69,4 @@ TXN067,2025-01-18 18:00,P003,Insulin Regular,Fridge-1,RECEIVED,60,42,102,INS-R-2
 TXN068,2025-01-18 14:30,P002,Oxycodone,Secure-Vault-1,RECEIVED,40,30,70,OXY-2025-007,Controlled restock,M001
 TXN069,2025-01-18 10:00,P001,Test-Stockout-Drug,ICU-Shelf-A,ADJUSTED,0,5,0,TEST-2025-001,Inventory correction,M002
 TXN070,2025-01-17 16:00,P004,Fentanyl,Secure-Vault-2,RECEIVED,75,46,121,FEN-2025-008,Bulk order,M001
+TXN1772433808703,2026-03-02 12:13,P001,PROP-20MG-ICU,RECEIVED,50

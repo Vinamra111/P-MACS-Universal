@@ -1,0 +1,31 @@
+timestamp,emp_id,action,role,details
+2026-03-02 12:03:39,N001,FAILED_LOGIN,Nurse,Invalid password
+2026-03-02 12:06:38,N001,LOGIN,Nurse,Successful login
+2026-03-02 12:06:42,P001,LOGIN,Pharmacist,Successful login
+2026-03-02 12:06:42,M001,LOGIN,Master,Successful login
+2026-03-02 12:06:47,N001,FAILED_LOGIN,Nurse,Invalid password
+2026-03-02 12:06:47,N011,BLOCKED_LOGIN,Nurse,Account blacklisted
+2026-03-02 12:06:53,N001,LOGIN,Nurse,Successful login
+2026-03-02 12:06:54,P001,LOGIN,Pharmacist,Successful login
+2026-03-02 12:06:55,M001,LOGIN,Master,Successful login
+2026-03-02 12:06:59,P001,LOGIN,Pharmacist,Successful login
+2026-03-02 12:07:03,P001,LOGIN,Pharmacist,Successful login
+2026-03-02 12:08:43,N001,QUERY,Nurse,Query: Where is Morphine?
+2026-03-02 12:10:44,N001,QUERY,Nurse,Query: find propofool
+2026-03-02 12:10:48,N001,QUERY,Nurse,Query: update stock of Morphine to 200
+2026-03-02 12:10:54,P001,QUERY,Pharmacist,Query: show top movers report
+2026-03-02 12:11:04,P001,QUERY,Pharmacist,Query: forecast Morphine for next 7 days
+2026-03-02 12:11:15,P001,QUERY,Pharmacist,Query: stockout risk report
+2026-03-02 12:11:49,P001,QUERY,Pharmacist,Query: generate purchase order for Morphine
+2026-03-02 12:12:03,P002,BLOCKED_LOGIN,Pharmacist,Account blacklisted
+2026-03-02 12:12:12,N001,QUERY,Nurse,Query: show expiring drugs
+2026-03-02 12:12:19,N001,QUERY,Nurse,Query: ICU inventory
+2026-03-02 12:12:30,P001,QUERY,Pharmacist,Query: calculate safety stock for Amoxicillin
+2026-03-02 12:12:38,P001,QUERY,Pharmacist,Query: detect seasonal patterns for Insulin
+2026-03-02 12:13:03,M001,QUERY,Master,Query: show system status
+2026-03-02 12:13:09,P001,QUERY,Pharmacist,Query: add 50 units of Propofol to ICU-Shelf-A
+2026-03-02 12:13:23,P001,QUERY,Pharmacist,Query: add stock: 50 units of Propofol received at ICU
+2026-03-02 12:50:16,N001,LOGIN,Nurse,Successful login
+2026-03-02 12:50:34,N001,QUERY,Nurse,Query: Show me all propofol stock
+2026-03-02 12:55:40,N001,QUERY,Nurse,Query: Show ICU inventory status
+2026-03-02 12:57:44,M001,LOGIN,Master,Successful login

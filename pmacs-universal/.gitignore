@@ -44,3 +44,4 @@ apps/flutter_app/.flutter-plugins-dependencies
 
 # Generated files
 *.generated.*
+.vercel

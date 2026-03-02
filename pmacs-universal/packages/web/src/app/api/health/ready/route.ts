@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { existsSync } from 'fs';
 import path from 'path';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   // Check if critical dependencies are available
   const checks = {
@@ -16,7 +18,7 @@ export async function GET(request: NextRequest) {
 
   // Check database
   try {
-    const dataPath = path.join(process.cwd(), '../api/data');
+    const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
     const inventoryPath = path.join(dataPath, 'inventory_master.csv');
     const usersPath = path.join(dataPath, 'user_access.csv');
 

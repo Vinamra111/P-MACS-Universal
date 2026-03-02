@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     // Verify admin access
@@ -14,7 +16,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const dataPath = path.join(process.cwd(), '../api/data');
+    const dataPath = path.join(process.cwd(), process.env.DATA_PATH || '../api/data');
     const accessLogsPath = path.join(dataPath, 'access_logs.csv');
     const archivePath = path.join(dataPath, 'archived_logs');
 

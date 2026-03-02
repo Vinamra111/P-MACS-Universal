@@ -21,7 +21,7 @@ class BackupManager {
 
   constructor() {
     this.config = {
-      sourceDataPath: process.env.DATA_PATH || path.join(process.cwd(), '../api/data'),
+      sourceDataPath: process.env.DATA_PATH || path.join(process.cwd(), process.env.DATA_PATH || '../api/data'),
       backupPath: process.env.BACKUP_PATH || path.join(process.cwd(), '../backups'),
       intervalHours: parseInt(process.env.BACKUP_INTERVAL_HOURS || '6', 10),
       retentionDays: parseInt(process.env.BACKUP_RETENTION_DAYS || '30', 10),
