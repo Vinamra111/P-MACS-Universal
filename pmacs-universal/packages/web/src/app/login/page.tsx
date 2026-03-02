@@ -16,9 +16,8 @@ export default function LoginPage() {
   const { user, login } = useAuth();
   const router = useRouter();
 
-  // Demo mode: only show credentials in development
-  const DEMO_MODE = process.env.NODE_ENV === 'development' &&
-                    process.env.NEXT_PUBLIC_DEMO_MODE !== 'false';
+  // Demo mode: controlled exclusively by NEXT_PUBLIC_DEMO_MODE build-time env var
+  const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
   // Redirect if already logged in
   useEffect(() => {
