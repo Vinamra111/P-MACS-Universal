@@ -9,6 +9,7 @@ A complete, production-ready hospital pharmacy management solution with web dash
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 **🔗 Repository:** https://github.com/Vinamra111/P-MACS-Universal.git
+**🔗 Live Link:**  https://pmacs-universal.vercel.app
 
 ---
 
